@@ -41,7 +41,7 @@ sh ./analyze_lexically.sh
 sh ./analyze_syntactically.sh
 ```
 
-#### 运行词法分析（需先运行语法分析，得到其指令输出）
+#### 运行虚拟机（需先运行语法分析，得到指令输出到文件中再作为虚拟机的输入）
 ```shell script
 sh ./run_vm.sh
 ```
