@@ -10,4 +10,4 @@ class SyntacticAnalyzer(object):
         self.uninitialized_vars, self.initialized_vars, self.constant_vars = {}, {}, {}
     
     def generate_instructions(self) -> List[VMOperator]:
-        pass
+        return []
