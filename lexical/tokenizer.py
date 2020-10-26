@@ -38,7 +38,8 @@ class LexicalTokenizer(object):
     def __init__(self, full_text: str):
         self.inputs = self.raw_inputs = full_text
         for w in STR_TO_TOKEN_TYPE.keys():
-            self.inputs = self.inputs.replace(w, f' {w} ')
+            if not LexicalTokenizer.isalpha(w):
+                self.inputs = self.inputs.replace(w, f' {w} ')
         self.inputs: List[str] = self.inputs.split()
         
         self.tok_chk = lambda s: (
