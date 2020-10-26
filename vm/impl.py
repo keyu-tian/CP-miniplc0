@@ -13,6 +13,8 @@ class VM(object):
         self._code_seg, self._stack_seg = [], []
         for ins in instructions.splitlines():
             ops = ins.split()
+            if len(ops) == 0:
+                continue
             self._code_seg.append(VM_OP_CLZ[ops[0]]() if len(ops) == 1 else VM_OP_CLZ[ops[0]](int(ops[1])))
         self._ip = 0
     
@@ -95,7 +97,8 @@ class VM(object):
 
 
 if __name__ == '__main__':
-    VM(instructions=
+    VM(
+        instructions=
         """
         LIT 1
         LIT 1

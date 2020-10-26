@@ -43,7 +43,13 @@ def main():
             # inss.append(f'{op.get_clz_repr() + ("" if op.operand is None else f" {op.operand}")}')
         # VM('\n'.join(inss)).run()
     else:
-        pass
+        try:
+            tokens = LexicalTokenizer(full_text=full_text).parse_tokens()
+        except TokenCompilationError or SyntacticCompilationError:
+            traceback.print_exc()
+            tokens = []
+        for tok in tokens:
+            print(f'{str(tok.token_type) + ("" if tok.val is None else f" {tok.val}")}', file=fout)
     
     fout.close()
 

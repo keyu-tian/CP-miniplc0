@@ -10,7 +10,7 @@ class SyntacticAnalyzer(object):
         self.tokens = tokens + [Token(TokenType.NULL_TOKEN, None)]
         self.uninitialized_vars, self.initialized_vars, self.constant_vars = {}, {}, {}
         self.all_vars = {}
-        self.instructions = []
+        self.instructions: List[VMOperator] = []
         self.cur = 0
         self.stack_offset = 0
 
@@ -74,7 +74,7 @@ class SyntacticAnalyzer(object):
         # parse ';'
         if self.get.token_type != TokenType.SEMICOLON:
             raise SynDeclarationErr('";" missing')
-        # performing
+        # perform
         self._declare_var(var_name=ident.val, initialized=True, const=True)
 
     # <const_expr> ::= [<sign>]<unsigned_int>
@@ -88,7 +88,7 @@ class SyntacticAnalyzer(object):
         # parse <unsigned_int>
         if tok.token_type != TokenType.UNSIGNED_INTEGER:
             raise SynExpressionErr('unsigned int missing')
-        # performing
+        # perform
         self.instructions.append(VM_OP_CLZ['LIT'](sign * tok.val))
 
     # <var_decl> ::= 'var'<identifier>['='<expr>]';'
@@ -112,7 +112,7 @@ class SyntacticAnalyzer(object):
             initialized = False
         else:
             raise SynDeclarationErr(f'"=" or ";" missing in the declaration of var "{ident.val}"')
-        # performing
+        # perform
         self._declare_var(var_name=ident.val, initialized=initialized, const=False)
 
     # <statement> ::= <assign> | <output> | ';'
@@ -149,7 +149,7 @@ class SyntacticAnalyzer(object):
         # parse ';'
         if self.get.token_type != TokenType.SEMICOLON:
             raise SynDeclarationErr('";" missing')
-        # performing
+        # perform
         if var_name in self.uninitialized_vars.keys():
             self.initialized_vars[var_name] = var_offset
             self.uninitialized_vars.pop(var_name)
@@ -171,13 +171,15 @@ class SyntacticAnalyzer(object):
         # parse ';'
         if self.get.token_type != TokenType.SEMICOLON:
             raise SynOutputErr('";" missing')
-        # performing
+        # perform
         self.instructions.append(VM_OP_CLZ['WRT']())
 
     # <expr> ::= <term>{'+'|'-'<term>}
     # NOTE: the result will be stored at the top of vm.stack
     def parse_expr(self):
+        # parse the first <term>
         self.parse_term()
+        # parse subsequent <term>s
         while self.peek.token_type in [TokenType.PLUS_SIGN, TokenType.MINUS_SIGN]:
             pm = self.get
             self.parse_term()
@@ -186,7 +188,9 @@ class SyntacticAnalyzer(object):
     # <term> ::= <factor>{'*'|'/'<factor>}
     # NOTE: the result will be stored at the top of vm.stack
     def parse_term(self):
+        # parse the first <factor>
         self.parse_factor()
+        # parse subsequent <factor>s
         while self.peek.token_type in [TokenType.MULTIPLICATION_SIGN, TokenType.DIVISION_SIGN]:
             md = self.get
             self.parse_factor()
@@ -195,11 +199,13 @@ class SyntacticAnalyzer(object):
     # <factor> ::= [<sign>]( <identifier> | <unsigned_int> | '('<expr>')' )
     # NOTE: the result will be stored at the top of vm.stack
     def parse_factor(self):
+        # parse [<sign>]
         tok = self.get
         signed = None
         if tok.token_type in [TokenType.PLUS_SIGN, TokenType.MINUS_SIGN]:
             signed = 1 if tok.token_type == TokenType.PLUS_SIGN else -1
             tok = self.get
+        # parse <identifier>
         if tok.token_type == TokenType.IDENTIFIER:
             var_name = tok.val
             var_offset = self.all_vars.get(var_name, None)
@@ -208,15 +214,17 @@ class SyntacticAnalyzer(object):
             if var_name in self.uninitialized_vars.keys():
                 raise SynFactorErr(f'reference of uninitialized var "{var_name}"')
             self.instructions.append(VM_OP_CLZ['LOD'](var_offset))
+        # parse <unsigned_int>
         elif tok.token_type == TokenType.UNSIGNED_INTEGER:
             self.instructions.append(VM_OP_CLZ['LIT'](tok.val))
+        # parse '(', <expr>, ')'
         elif tok.token_type == TokenType.LEFT_BRACKET:
             self.parse_expr()
             if self.get.token_type != TokenType.RIGHT_BRACKET:
                 raise SynFactorErr('")" missing')
         else:
             raise SynFactorErr(f'identifier or uint or (expr) missing')
-        
+        # perform
         if signed is not None:
             self.instructions.append(VM_OP_CLZ['LIT'](signed))
             self.instructions.append(VM_OP_CLZ['MUL']())

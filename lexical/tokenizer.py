@@ -54,16 +54,20 @@ class LexicalTokenizer(object):
         strs, tokens = [], []
         [strs.extend(self.tok_chk(s)) for s in self.inputs]
         for nxt_str in strs:
+            # parse key words or symbols
             token_type = STR_TO_TOKEN_TYPE.get(nxt_str, None)
             if token_type is not None:
                 tokens.append(Token(token_type=token_type, val=nxt_str))
+            # parse unsigned integers
             elif nxt_str.isdecimal():
                 uint_val = int(nxt_str)
                 if uint_val > 0x7fffffff:
                     raise TokArithmeticOverflowErr
                 tokens.append(Token(token_type=TokenType.UNSIGNED_INTEGER, val=uint_val))
+            # parse identifiers
             elif nxt_str.isidentifier():
                 tokens.append(Token(token_type=TokenType.IDENTIFIER, val=nxt_str))
+            # failed
             else:
                 raise UnknownTokenErr(f'"{nxt_str}"')
         return tokens
