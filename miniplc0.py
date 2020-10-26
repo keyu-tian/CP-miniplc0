@@ -3,7 +3,6 @@ import os
 import sys
 
 print(os.listdir('.'))
-print(os.system('tree .'))
 
 from lexical.tokenizer import LexicalTokenizer
 from syntactic.analyzer import SyntacticAnalyzer
