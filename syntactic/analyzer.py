@@ -28,6 +28,7 @@ class SyntacticAnalyzer(object):
         self.cur -= 1
     
     def generate_instructions(self) -> List[VMOperator]:
+        # initialize
         [c.clear() for c in [
             self.uninitialized_vars,
             self.initialized_vars,
@@ -36,11 +37,16 @@ class SyntacticAnalyzer(object):
             self.instructions
         ]]
         self.cur = self.stack_offset = 0
+        
+        # parse 'begin'
         if self.get.token_type != TokenType.BEGIN:
             raise SynProcessErr('"begin" missing')
+        # parse <main_process>
         self.parse_main_process()
+        # parse 'end'
         if self.get.token_type != TokenType.END:
             raise SynProcessErr('"end" missing')
+        # parse EOF
         if self.get.token_type != TokenType.NULL_TOKEN:
             raise SynProcessErr('trails after the "end"')
         return self.instructions
