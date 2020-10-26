@@ -1,5 +1,5 @@
 import argparse
-import sys
+import traceback
 
 from lexical.err import TokenCompilationError
 from lexical.tokenizer import LexicalTokenizer
@@ -35,8 +35,8 @@ def main():
             tokens = LexicalTokenizer(full_text=full_text).parse_tokens()
             instructions = SyntacticAnalyzer(tokens=tokens).generate_instructions()
         except TokenCompilationError or SyntacticCompilationError:
-            print('\n\n', full_text, file=sys.stderr)
-            print('\n\n', full_text, file=sys.stdout)
+            traceback.print_exc()
+            instructions = []
         inss = []
         for op in instructions:
             print(f'{op.get_clz_repr() + ("" if op.operand is None else f" {op.operand}")}', file=fout)
