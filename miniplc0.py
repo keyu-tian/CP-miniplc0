@@ -37,10 +37,10 @@ def main():
         except TokenCompilationError or SyntacticCompilationError:
             traceback.print_exc()
             instructions = []
-        inss = []
+        # inss = []
         for op in instructions:
             print(f'{op.get_clz_repr() + ("" if op.operand is None else f" {op.operand}")}', file=fout)
-            inss.append(f'{op.get_clz_repr() + ("" if op.operand is None else f" {op.operand}")}')
+            # inss.append(f'{op.get_clz_repr() + ("" if op.operand is None else f" {op.operand}")}')
         # VM('\n'.join(inss)).run()
     else:
         pass
