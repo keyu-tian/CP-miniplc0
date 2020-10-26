@@ -1,4 +1,9 @@
 import argparse
+import os
+import sys
+
+print(os.getcwd(), file=sys.stdout)
+print(os.getcwd(), file=sys.stderr)
 
 from lexical.tokenizer import LexicalTokenizer
 from syntactic.analyzer import SyntacticAnalyzer
