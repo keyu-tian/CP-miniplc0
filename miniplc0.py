@@ -29,12 +29,12 @@ def main():
     
     if performing_syntactic_analysis:
         tokens = LexicalTokenizer(full_text=full_text).parse_tokens()
-        from pprint import pprint as pp
-        pp(tokens)
         instructions = SyntacticAnalyzer(tokens=tokens).generate_instructions()
+        inss = []
         for op in instructions:
             print(f'{op.get_clz_repr() + ("" if op.operand is None else f" {op.operand}")}', file=fout)
-            print(f'{op.get_clz_repr() + ("" if op.operand is None else f" {op.operand}")}')
+            inss.append(f'{op.get_clz_repr() + ("" if op.operand is None else f" {op.operand}")}')
+        # VM('\n'.join(inss)).run()
     else:
         pass
     
