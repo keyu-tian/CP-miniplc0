@@ -1,7 +1,10 @@
 import argparse
+import sys
 
+from lexical.err import TokenCompilationError
 from lexical.tokenizer import LexicalTokenizer
 from syntactic.analyzer import SyntacticAnalyzer
+from syntactic.err import SyntacticCompilationError
 from vm.impl import VM
 
 
@@ -28,8 +31,12 @@ def main():
         full_text = fin.read()
     
     if performing_syntactic_analysis:
-        tokens = LexicalTokenizer(full_text=full_text).parse_tokens()
-        instructions = SyntacticAnalyzer(tokens=tokens).generate_instructions()
+        try:
+            tokens = LexicalTokenizer(full_text=full_text).parse_tokens()
+            instructions = SyntacticAnalyzer(tokens=tokens).generate_instructions()
+        except TokenCompilationError or SyntacticCompilationError:
+            print('\n\n', full_text, file=sys.stderr)
+            print('\n\n', full_text, file=sys.stdout)
         inss = []
         for op in instructions:
             print(f'{op.get_clz_repr() + ("" if op.operand is None else f" {op.operand}")}', file=fout)

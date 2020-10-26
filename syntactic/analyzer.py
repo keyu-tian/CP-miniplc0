@@ -136,7 +136,7 @@ class SyntacticAnalyzer(object):
         if ident.token_type != TokenType.IDENTIFIER:
             raise SynAssignErr('identifier missing')
         var_name = ident.val
-        if var_name in self.constant_vars:
+        if var_name in self.constant_vars.keys():
             raise SynAssignErr(f'assignment of read-only var "{var_name}"')
         var_offset = self.all_vars.get(var_name, None)
         if var_offset is None:
