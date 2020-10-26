@@ -5,7 +5,7 @@ from vm.err import VMIllegalInstruction, VMArithmeticOverflow, VMZeroDivision
 
 VM_OP_CLZ = Registry()
 
-__all__ = ['VM_OP_CLZ']
+__all__ = ['VMOperator', 'VM_OP_CLZ']
 
 
 class VMOperator(metaclass=ABCMeta):
@@ -28,26 +28,26 @@ class VMOperator(metaclass=ABCMeta):
 
 
 @VM_OP_CLZ.register('ILL')
-class IllegalInstruction(VMOperator):
+class _IllegalInstruction(VMOperator):
     def exec(self, vm):
         raise VMIllegalInstruction
 
 
 @VM_OP_CLZ.register('LIT')
-class LoadInt(VMOperator):
+class _LoadInt(VMOperator):
     def exec(self, vm):
         vm.push(self.operand)
 
 
 @VM_OP_CLZ.register('LOD')
-class Load(VMOperator):
+class _Load(VMOperator):
     def exec(self, vm):
         val = vm[self.operand]
         vm.push(val)
 
 
 @VM_OP_CLZ.register('STO')
-class Store(VMOperator):
+class _Store(VMOperator):
     def exec(self, vm):
         val = vm.top()
         vm[self.operand] = val
@@ -55,35 +55,35 @@ class Store(VMOperator):
 
 
 @VM_OP_CLZ.register('ADD')
-class Add(VMOperator):
+class _Add(VMOperator):
     def exec(self, vm):
         top, btm = vm.pop(), vm.pop()
         vm.push(_calc(btm, '+', top))
 
 
 @VM_OP_CLZ.register('SUB')
-class Subtract(VMOperator):
+class _Subtract(VMOperator):
     def exec(self, vm):
         top, btm = vm.pop(), vm.pop()
         vm.push(_calc(btm, '-', top))
 
 
 @VM_OP_CLZ.register('MUL')
-class Multiply(VMOperator):
+class _Multiply(VMOperator):
     def exec(self, vm):
         top, btm = vm.pop(), vm.pop()
         vm.push(_calc(btm, '*', top))
 
 
 @VM_OP_CLZ.register('DIV')
-class Divide(VMOperator):
+class _Divide(VMOperator):
     def exec(self, vm):
         top, btm = vm.pop(), vm.pop()
         vm.push(_calc(btm, '//', top))
 
 
 @VM_OP_CLZ.register('WRT')
-class Write(VMOperator):
+class _Write(VMOperator):
     def exec(self, vm):
         vm.write(vm.pop())
 
