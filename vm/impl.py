@@ -2,7 +2,7 @@ import sys
 import traceback
 from typing import Callable
 
-from vm.err import VMAccessViolation, VMStackOverflow, VMErr, VMIllegalInstruction
+from vm.err import VMAccessViolationErr, VMStackOverflowErr, VMErr, VMIllegalInstructionErr
 
 
 class VM(object):
@@ -18,7 +18,7 @@ class VM(object):
             try:
                 op.exec(self)
                 peep(self)
-            except VMIllegalInstruction:
+            except VMIllegalInstructionErr:
                 break
             
             except VMErr:
@@ -50,39 +50,39 @@ class VM(object):
     
     def push(self, val):
         if len(self._stack_seg) >= VM.STACK_SIZE:
-            raise VMStackOverflow
+            raise VMStackOverflowErr
         self._stack_seg.append(val)
     
     def top(self):
         try:
             val = self._stack_seg[-1]
         except IndexError:
-            raise VMAccessViolation
+            raise VMAccessViolationErr
         return val
     
     def pop(self):
         try:
             val = self._stack_seg.pop()
         except IndexError:
-            raise VMAccessViolation
+            raise VMAccessViolationErr
         return val
     
     def __getitem__(self, offset):
         if offset < 0:
-            raise VMAccessViolation
+            raise VMAccessViolationErr
         try:
             val = self._stack_seg[offset]
         except IndexError:
-            raise VMAccessViolation
+            raise VMAccessViolationErr
         return val
     
     def __setitem__(self, offset, val):
         if offset < 0:
-            raise VMAccessViolation
+            raise VMAccessViolationErr
         try:
             self._stack_seg[offset] = val
         except IndexError:
-            raise VMAccessViolation
+            raise VMAccessViolationErr
     
     @staticmethod
     def write(*args, **kwargs):

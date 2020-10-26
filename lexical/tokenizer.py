@@ -1,7 +1,7 @@
 import re
 from typing import List
 
-from lexical.err import TokenCompilationError
+from lexical.err import UnknownTokenErr
 from lexical.meta import Token, TokenType, STR_TO_TOKEN_TYPE
 
 
@@ -61,7 +61,7 @@ class LexicalTokenizer(object):
             elif nxt_str.isidentifier():
                 tokens.append(Token(token_type=TokenType.IDENTIFIER, val=nxt_str))
             else:
-                raise TokenCompilationError
+                raise UnknownTokenErr
         return tokens
 
 

@@ -2,21 +2,21 @@ class VMErr(Exception):
     pass
 
 
-class VMIllegalInstruction(VMErr):
+class VMIllegalInstructionErr(VMErr):
     pass
 
 
-class VMAccessViolation(VMErr):
+class VMAccessViolationErr(VMErr):
     pass
 
 
-class VMStackOverflow(VMErr):
+class VMStackOverflowErr(VMErr):
     pass
 
 
-class VMArithmeticOverflow(VMErr):
+class VMArithmeticOverflowErr(VMErr):
     pass
 
 
-class VMZeroDivision(VMErr):
+class VMZeroDivisionErr(VMErr):
     pass

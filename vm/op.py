@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
 from utils.registry import Registry
-from vm.err import VMIllegalInstruction, VMArithmeticOverflow, VMZeroDivision
+from vm.err import VMIllegalInstructionErr, VMArithmeticOverflowErr, VMZeroDivisionErr
 
 VM_OP_CLZ = Registry()
 
@@ -30,7 +30,7 @@ class VMOperator(metaclass=ABCMeta):
 @VM_OP_CLZ.register('ILL')
 class _IllegalInstruction(VMOperator):
     def exec(self, vm):
-        raise VMIllegalInstruction
+        raise VMIllegalInstructionErr
 
 
 @VM_OP_CLZ.register('LIT')
@@ -92,9 +92,9 @@ def _calc(lhs, op, rhs):
     try:
         res = eval(f'{lhs}{op}{rhs}')
     except ZeroDivisionError:
-        raise VMZeroDivision
+        raise VMZeroDivisionErr
     if res > 0x7fffffff or res < -0x80000000:
-        raise VMArithmeticOverflow
+        raise VMArithmeticOverflowErr
     return res
 
 

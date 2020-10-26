@@ -1,6 +1,6 @@
-class TokenErr(Exception):
+class TokenCompilationError(Exception):
     pass
 
 
-class TokenCompilationError(TokenErr):
+class UnknownTokenErr(TokenCompilationError):
     pass
