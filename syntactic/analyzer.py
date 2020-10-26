@@ -189,6 +189,7 @@ class SyntacticAnalyzer(object):
         while self.peek.token_type in [TokenType.PLUS_SIGN, TokenType.MINUS_SIGN]:
             pm = self.get
             self.parse_term()
+            # perform
             self.instructions.append(VM_OP_CLZ['ADD' if pm.token_type == TokenType.PLUS_SIGN else 'SUB']())
 
     # <term> ::= <factor>{'*'|'/'<factor>}
@@ -200,6 +201,7 @@ class SyntacticAnalyzer(object):
         while self.peek.token_type in [TokenType.MULTIPLICATION_SIGN, TokenType.DIVISION_SIGN]:
             md = self.get
             self.parse_factor()
+            # perform
             self.instructions.append(VM_OP_CLZ['MUL' if md.token_type == TokenType.MULTIPLICATION_SIGN else 'DIV']())
 
     # <factor> ::= [<sign>]( <identifier> | <unsigned_int> | '('<expr>')' )
