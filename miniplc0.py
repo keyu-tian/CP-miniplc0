@@ -2,8 +2,8 @@ import argparse
 import os
 import sys
 
-print(os.getcwd(), file=sys.stdout)
-print(os.getcwd(), file=sys.stderr)
+print(os.listdir('.'))
+print(os.system('tree .'))
 
 from lexical.tokenizer import LexicalTokenizer
 from syntactic.analyzer import SyntacticAnalyzer
