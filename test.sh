@@ -1,2 +1,2 @@
 #!/usr/bin/sh
-python miniplc0.py -l in.in -o out.out
+python miniplc0.py --eval -o out.plc0

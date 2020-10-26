@@ -2,14 +2,18 @@ import sys
 import traceback
 from typing import Callable
 
+from vm.op import VM_OP_CLZ
 from vm.err import VMAccessViolationErr, VMStackOverflowErr, VMErr, VMIllegalInstructionErr
 
 
 class VM(object):
     STACK_SIZE = 1 << 10
     
-    def __init__(self, instructions):
-        self._code_seg, self._stack_seg = instructions, []
+    def __init__(self, instructions: str):
+        self._code_seg, self._stack_seg = [], []
+        for ins in instructions.splitlines():
+            ops = ins.split()
+            self._code_seg.append(VM_OP_CLZ[ops[0]]() if len(ops) == 1 else VM_OP_CLZ[ops[0]](int(ops[1])))
         self._ip = 0
     
     def run(self, peep: Callable = lambda _: _):
@@ -91,17 +95,17 @@ class VM(object):
 
 
 if __name__ == '__main__':
-    from vm.op import VM_OP_CLZ
-    
-    VM(instructions=[
-        VM_OP_CLZ['LIT'](1),
-        VM_OP_CLZ['LIT'](2),
-        VM_OP_CLZ['LIT'](0),
-        VM_OP_CLZ['LIT'](0),
-        VM_OP_CLZ['LIT'](0),
-        VM_OP_CLZ['DIV'](),
-        VM_OP_CLZ['WRT'](),
-        VM_OP_CLZ['WRT'](),
-        VM_OP_CLZ['WRT'](),
-        VM_OP_CLZ['WRT'](),
-    ]).run()
+    VM(instructions=
+        """
+        LIT 1
+        LIT 1
+        LIT 1
+        LIT 1
+        LIT 1
+        DIV
+        WRT
+        WRT
+        WRT
+        WRT
+        """
+    ).run()

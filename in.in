@@ -1,0 +1,6 @@
+begin
+    const N = 10;
+    var a = 1 + N;
+    var b = a + N;
+    print((b+2) * N);
+end
