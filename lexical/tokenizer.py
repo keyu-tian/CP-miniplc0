@@ -1,7 +1,7 @@
 import re
 from typing import List
 
-from lexical.err import UnknownTokenErr
+from lexical.err import UnknownTokenErr, TokArithmeticOverflowErr
 from lexical.meta import Token, TokenType, STR_TO_TOKEN_TYPE
 
 
@@ -57,7 +57,10 @@ class LexicalTokenizer(object):
             if token_type is not None:
                 tokens.append(Token(token_type=token_type, val=nxt_str))
             elif nxt_str.isdecimal():
-                tokens.append(Token(token_type=TokenType.UNSIGNED_INTEGER, val=int(nxt_str)))
+                uint_val = int(nxt_str)
+                if uint_val > 0x7fffffff:
+                    raise TokArithmeticOverflowErr
+                tokens.append(Token(token_type=TokenType.UNSIGNED_INTEGER, val=uint_val))
             elif nxt_str.isidentifier():
                 tokens.append(Token(token_type=TokenType.IDENTIFIER, val=nxt_str))
             else:

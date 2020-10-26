@@ -14,18 +14,19 @@ def main():
     fout = open(args.o, 'w')
 
     performing_syntactic_analysis = args.l is not None
-    with open(args.t or args.l, 'w') as fin:
+    with open(args.t or args.l, 'r') as fin:
         full_text = fin.read()
     
     if performing_syntactic_analysis:
         tokens = LexicalTokenizer(full_text=full_text).parse_tokens()
         instructions = SyntacticAnalyzer(tokens=tokens).generate_instructions()
         for op in instructions:
-            print(f'{op.get_clz_repr() + "" if op.operand is None else str(op.operand)}', file=fout)
+            print(f'{op.get_clz_repr() + ("" if op.operand is None else f" {op.operand}")}', file=fout)
     else:
         pass
     
     fout.close()
+
 
 if __name__ == '__main__':
     main()

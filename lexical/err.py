@@ -4,3 +4,7 @@ class TokenCompilationError(Exception):
 
 class UnknownTokenErr(TokenCompilationError):
     pass
+
+
+class TokArithmeticOverflowErr(TokenCompilationError):
+    pass
