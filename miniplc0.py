@@ -1,8 +1,4 @@
 import argparse
-import os
-import sys
-
-print(os.listdir('.'))
 
 from lexical.tokenizer import LexicalTokenizer
 from syntactic.analyzer import SyntacticAnalyzer

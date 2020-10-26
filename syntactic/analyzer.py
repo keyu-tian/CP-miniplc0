@@ -135,11 +135,12 @@ class SyntacticAnalyzer(object):
         ident = self.get
         if ident.token_type != TokenType.IDENTIFIER:
             raise SynAssignErr('identifier missing')
-        if ident.val in self.constant_vars:
-            raise SynAssignErr(f'assignment of read-only var "{ident.val}"')
-        var_offset = self.all_vars.get(ident.val, None)
+        var_name = ident.val
+        if var_name in self.constant_vars:
+            raise SynAssignErr(f'assignment of read-only var "{var_name}"')
+        var_offset = self.all_vars.get(var_name, None)
         if var_offset is None:
-            raise SynAssignErr(f'assignment of undefined var "{ident.val}"')
+            raise SynAssignErr(f'assignment of undefined var "{var_name}"')
         # parse '='
         if self.get.token_type != TokenType.EQUAL_SIGN:
             raise SynAssignErr('"=" missing')
@@ -149,6 +150,9 @@ class SyntacticAnalyzer(object):
         if self.get.token_type != TokenType.SEMICOLON:
             raise SynDeclarationErr('";" missing')
         # performing
+        if var_name in self.uninitialized_vars.keys():
+            self.initialized_vars[var_name] = var_offset
+            self.uninitialized_vars.pop(var_name)
         self.instructions.append(VM_OP_CLZ['STO'](var_offset))
 
     # <output> ::= 'print''(' <expr> ')'';'
@@ -197,9 +201,12 @@ class SyntacticAnalyzer(object):
             signed = 1 if tok.token_type == TokenType.PLUS_SIGN else -1
             tok = self.get
         if tok.token_type == TokenType.IDENTIFIER:
-            var_offset = self.all_vars.get(tok.val, None)
+            var_name = tok.val
+            var_offset = self.all_vars.get(var_name, None)
             if var_offset is None:
-                raise SynFactorErr(f'reference of undefined var "{tok.val}"')
+                raise SynFactorErr(f'reference of undefined var "{var_name}"')
+            if var_name in self.uninitialized_vars.keys():
+                raise SynFactorErr(f'reference of uninitialized var "{var_name}"')
             self.instructions.append(VM_OP_CLZ['LOD'](var_offset))
         elif tok.token_type == TokenType.UNSIGNED_INTEGER:
             self.instructions.append(VM_OP_CLZ['LIT'](tok.val))
