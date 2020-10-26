@@ -1,0 +1,7 @@
+[jobs.miniplc0]
+
+image = { source = "dockerfile", path = ".", tag = "miniplc0-py" }
+
+run = [
+    "python miniplc0.py -l $input -o $output",
+]

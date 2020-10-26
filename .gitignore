@@ -3,5 +3,5 @@
 *.pth.tar
 .idea
 __pycache__
-*log*
+*log.txt
 
