@@ -14,7 +14,7 @@ class SynStatementErr(SyntacticCompilationError):
     pass
 
 
-class SynAssignErr(SyntacticCompilationError):
+class SynAssignmentErr(SyntacticCompilationError):
     pass
 
 

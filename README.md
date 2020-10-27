@@ -20,7 +20,7 @@
 - 栈式虚拟机的指令，定义为了一个简单的 `VMOperator` 抽象类，其只有一个字段，表示自己可能存在的操作数；本处使用了 `Register` 模式让各个 `VMOperator` 的实现类能够更轻松地被管理，增强了可维护性。
 - 语法分析器部分的注释较为全面，基本和 [助教列出的文法](https://github.com/BUAA-SE-Compiling/miniplc0-handbook/blob/master/readme-cpp.md) 做到了一一对应。
 - 语法分析器的输入（构造函数参数）是一个 `List[Token]`（也就是词法分析器的输出）。
-- 构造语法分析器的时候，为了便于之后判断是否到了文档尾，特意在 Token 列表的末尾增加了一个 `token_type=TokenType.NULL_TOKEN` 的 Token 作为哨兵。
+- 构造语法分析器的时候，为了便于之后判断是否到了文档尾，特意在 Token 列表的末尾增加了一个 `token_type=TokenType.EOF_TOKEN` 的 Token 作为哨兵。
 - 语法分析器的输出（`generate_instructions` 函数的返回值）是一个 `List[VMOperator]`。
 
 

@@ -2,12 +2,12 @@ from vm.op import VMOperator, VM_OP_CLZ
 from typing import List
 
 from lexical.meta import Token, TokenType
-from syntactic.err import SynProcessErr, SynDeclarationErr, SynStatementErr, SynExpressionErr, SynAssignErr, SynOutputErr, SynFactorErr
+from syntactic.err import SynProcessErr, SynDeclarationErr, SynStatementErr, SynExpressionErr, SynAssignmentErr, SynOutputErr, SynFactorErr
 
 
 class SyntacticAnalyzer(object):
     def __init__(self, tokens: List[Token]):
-        self.tokens = tokens + [Token(TokenType.NULL_TOKEN, None)]
+        self.tokens = tokens + [Token(TokenType.EOF_TOKEN, None)]
         self.uninitialized_vars, self.initialized_vars, self.constant_vars = {}, {}, {}
         self.all_vars = {}
         self.instructions: List[VMOperator] = []
@@ -47,19 +47,19 @@ class SyntacticAnalyzer(object):
         if self.get.token_type != TokenType.END:
             raise SynProcessErr('"end" missing')
         # parse EOF
-        if self.get.token_type != TokenType.NULL_TOKEN:
-            raise SynProcessErr('trails after the "end"')
+        if self.get.token_type != TokenType.EOF_TOKEN:
+            raise SynProcessErr('trails found after the "end"')
         return self.instructions
 
     # <main_process> ::= {<const_decl>}{<var_decl>}{<statement>}
     def parse_main_process(self):
-        # parse <const_decls>
+        # parse <const_decl>s
         while self.peek.token_type == TokenType.CONST:
             self.parse_const_decl()
-        # parse <var_decls>
+        # parse <var_decl>s
         while self.peek.token_type == TokenType.VAR:
             self.parse_var_decl()
-        # parse <statements>
+        # parse <statement>s
         while self.peek.token_type != TokenType.END:
             self.parse_statement()
 
@@ -121,11 +121,11 @@ class SyntacticAnalyzer(object):
         # perform
         self._declare_var(var_name=ident.val, initialized=initialized, const=False)
 
-    # <statement> ::= <assign> | <output> | ';'
+    # <statement> ::= <assignment> | <output> | ';'
     def parse_statement(self):
-        # parse <assign>
+        # parse <assignment>
         if self.peek.token_type == TokenType.IDENTIFIER:
-            self.parse_assign()
+            self.parse_assignment()
         # parse <output>
         elif self.peek.token_type == TokenType.PRINT:
             self.parse_output()
@@ -135,28 +135,28 @@ class SyntacticAnalyzer(object):
         else:
             raise SynStatementErr(f'unknown statement (starts with {self.peek.token_type})')
 
-    # <assign> ::= <identifier>'='<expr>';'
-    def parse_assign(self):
+    # <assignment> ::= <identifier>'='<expr>';'
+    def parse_assignment(self):
         # parse <identifier>
         ident = self.get
         if ident.token_type != TokenType.IDENTIFIER:
-            raise SynAssignErr('identifier missing')
+            raise SynAssignmentErr('identifier missing')
         var_name = ident.val
-        if var_name in self.constant_vars.keys():
-            raise SynAssignErr(f'assignment of read-only var "{var_name}"')
+        if var_name in self.constant_vars:
+            raise SynAssignmentErr(f'assignment of read-only var "{var_name}"')
         var_offset = self.all_vars.get(var_name, None)
         if var_offset is None:
-            raise SynAssignErr(f'assignment of undefined var "{var_name}"')
+            raise SynAssignmentErr(f'assignment of undefined var "{var_name}"')
         # parse '='
         if self.get.token_type != TokenType.EQUAL_SIGN:
-            raise SynAssignErr('"=" missing')
+            raise SynAssignmentErr('"=" missing')
         # parse <expr>
         self.parse_expr()
         # parse ';'
         if self.get.token_type != TokenType.SEMICOLON:
-            raise SynDeclarationErr('";" missing')
+            raise SynAssignmentErr('";" missing')
         # perform
-        if var_name in self.uninitialized_vars.keys():
+        if var_name in self.uninitialized_vars:
             self.initialized_vars[var_name] = var_offset
             self.uninitialized_vars.pop(var_name)
         self.instructions.append(VM_OP_CLZ['STO'](var_offset))
@@ -219,7 +219,7 @@ class SyntacticAnalyzer(object):
             var_offset = self.all_vars.get(var_name, None)
             if var_offset is None:
                 raise SynFactorErr(f'reference of undefined var "{var_name}"')
-            if var_name in self.uninitialized_vars.keys():
+            if var_name in self.uninitialized_vars:
                 raise SynFactorErr(f'reference of uninitialized var "{var_name}"')
             self.instructions.append(VM_OP_CLZ['LOD'](var_offset))
         # parse <unsigned_int>
@@ -246,3 +246,18 @@ class SyntacticAnalyzer(object):
             vs = self.initialized_vars if initialized else self.uninitialized_vars
         self.all_vars[var_name] = vs[var_name] = self.stack_offset
         self.stack_offset += 1
+
+
+if __name__ == '__main__':
+    from pprint import pprint as pp
+    from lexical.tokenizer import LexicalTokenizer
+    
+    tokens = LexicalTokenizer(
+        """
+        begin
+            var baad = 1;
+            print(baad);
+        end
+        """
+    ).parse_tokens()
+    pp([str(op) for op in SyntacticAnalyzer(tokens).generate_instructions()])

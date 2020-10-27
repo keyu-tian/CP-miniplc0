@@ -3,7 +3,7 @@ from enum import Enum, auto
 
 
 class TokenType(Enum):
-    NULL_TOKEN = auto()
+    EOF_TOKEN = auto()
     UNSIGNED_INTEGER = auto()
     IDENTIFIER = auto()
     

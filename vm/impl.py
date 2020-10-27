@@ -45,8 +45,8 @@ class VM(object):
         max_ip = len(self._code_seg)
         ip_fmt = f'%{len(str(max_ip))}d'
         for i, op in enumerate(self._code_seg):
-            print(f'{ip_fmt % i} | {str(op):13s} | {"<== ip" if i == self._ip else ""}', file=fp)
-        print(f'{max_ip} | {" " * 13} | {"<== ip" if max_ip == self._ip else ""}', file=fp)
+            print(f'{ip_fmt % i} | {str(op):14s} | {"<== ip" if i == self._ip else ""}', file=fp)
+        print(f'{max_ip} | {" " * 14} | {"<== ip" if max_ip == self._ip else ""}', file=fp)
         print('====================', file=fp)
     
     # interfaces

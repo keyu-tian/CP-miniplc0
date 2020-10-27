@@ -1,9 +1,9 @@
 begin
     const N = 10;
-    var vars = -(-(1 + N)) / 1;
-    var b = vars + N;
+    var var1 = -(-(1 + N)) / 1;
+    var b = var1 + N;
     var c = 2147483647;
-    var d = (-c-1);
+    var d = (((((-c-1)))));
     print(c);
     print(d);
     print((b+1-3+4 ) * (-(-N)));

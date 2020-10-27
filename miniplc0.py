@@ -37,11 +37,9 @@ def main():
         except TokenCompilationError or SyntacticCompilationError:
             traceback.print_exc()
             instructions = []
-        # inss = []
         for op in instructions:
-            print(f'{op.get_clz_repr() + ("" if op.operand is None else f" {op.operand}")}', file=fout)
-            # inss.append(f'{op.get_clz_repr() + ("" if op.operand is None else f" {op.operand}")}')
-        # VM('\n'.join(inss)).run()
+            print(op, file=fout)
+        # VM('\n'.join(str(op) for op in instructions)).run()
     else:
         try:
             tokens = LexicalTokenizer(full_text=full_text).parse_tokens()
@@ -49,7 +47,7 @@ def main():
             traceback.print_exc()
             tokens = []
         for tok in tokens:
-            print(f'{str(tok.token_type) + ("" if tok.val is None else f" {tok.val}")}', file=fout)
+            print(f'{str(tok.token_type).split(".")[-1] + ("" if tok.val is None else f" {tok.val}")}', file=fout)
     
     fout.close()
 

@@ -15,7 +15,7 @@ class VMOperator(metaclass=ABCMeta):
     def __str__(self):
         return self.get_clz_repr() + (
             '' if self.operand is None
-            else f'({self.operand:8x})'
+            else f' {self.operand}'
         )
     
     @classmethod
