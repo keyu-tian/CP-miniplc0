@@ -1,5 +1,6 @@
 import argparse
 import traceback
+import colorama
 
 from lexical.err import TokenCompilationError
 from lexical.tokenizer import LexicalTokenizer
